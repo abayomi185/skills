@@ -14,12 +14,12 @@ My [Agent Skills](https://agentskills.io/specification). Each skill is a folder 
 
 ### Vendored
 
-Copied from other repos. Each folder keeps the upstream license.
+Not written by me. Copied from other repos at a pinned commit. Each folder keeps the upstream license, and each `SKILL.md` records the author and source commit in its `license` and `metadata` frontmatter.
 
-| Skill | Upstream | Notes |
-| --- | --- | --- |
-| [unslop](skills/unslop/) | [cursor/plugins](https://github.com/cursor/plugins/tree/main/pstack/skills/unslop) (MIT) | Older revision, description edited to always apply |
-| [socratic-tutor](skills/socratic-tutor/) | [janestreet/agent_skills](https://github.com/janestreet/agent_skills/tree/main/socratic-tutor) (MIT) | Unmodified |
+| Skill | Author | Upstream | Changes |
+| --- | --- | --- | --- |
+| [unslop](skills/unslop/) | Lauren Tan | [cursor/plugins@2f87c85](https://github.com/cursor/plugins/tree/2f87c854fe3e2fcda44ca86b46ede35aad3c46b7/pstack/skills/unslop) (MIT) | Attribution frontmatter only |
+| [socratic-tutor](skills/socratic-tutor/) | Jane Street | [janestreet/agent_skills@7c6715c](https://github.com/janestreet/agent_skills/tree/7c6715c29548a3b39d4a9545c698ee4fd17a7213/socratic-tutor) (MIT) | Attribution frontmatter only |
 
 Other skills I use, installed straight from upstream:
 
