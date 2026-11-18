@@ -1,9 +1,11 @@
 ---
 name: paste-rs
-description: Share text through paste.rs, a no-signup online clipboard. Use when the user wants to copy text out of the terminal or onto another machine, asks for a paste, pastebin or online clipboard link, or gives a paste.rs URL to read. Uploads are public; never use for secrets.
+description: The user's clipboard skill. Shares text through paste.rs, a no-signup online clipboard. Use when the user mentions the clipboard skill, says "put it in a clipboard" or "clipboard it", wants to copy text out of the terminal or onto another machine, asks for a paste, pastebin or online clipboard link, or gives a paste.rs URL to read. Uploads are public; never use for secrets.
 ---
 
-# paste.rs
+# Clipboard (paste.rs)
+
+The user calls this the clipboard skill. "Clipboard" here means a paste.rs link, not the local system clipboard (`wl-copy`, `pbcopy`, `clip.exe`), unless the user names one of those.
 
 paste.rs stores raw text and returns a URL. Anyone with the URL can read or delete the paste, and it has no login, expiry setting or password.
 
