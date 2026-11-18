@@ -10,6 +10,7 @@ My [Agent Skills](https://agentskills.io/specification). Each skill is a folder 
 | [design-proposal](skills/design-proposal/) | Write a short, diagram-led design proposal or decision doc |
 | [explain-diff-html](skills/explain-diff-html/) | Explain a diff, branch or PR as a rich HTML page |
 | [jira-ticket](skills/jira-ticket/) | Write concise Jira tickets with acceptance criteria and a test plan, linked to the PR |
+| [paste-rs](skills/paste-rs/) | Share text through paste.rs as an online clipboard |
 | [uv-ruff](skills/uv-ruff/) | Lint and format a Python project with ruff via uv |
 
 ### Vendored
