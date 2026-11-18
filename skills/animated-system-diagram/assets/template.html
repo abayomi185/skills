@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>__TITLE__</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&family=Poppins:wght@600;700&display=swap">
+<style>
+/* Animated system diagram. One deliberate light look (white canvas), so colours do not follow dark mode. */
+:root {
+  color-scheme: light;
+  --bg: #ffffff; --panel: #f7f8fb; --ink: #111827; --text: #374151; --muted: #6b7280; --line: #e5e7eb; --wire: #c3cad6;
+  --violet: #ece8ff; --violet-s: #7c6ad8;  --blue: #e2efff; --blue-s: #3b7ddd;
+  --green: #e1f5e9; --green-s: #2f9e63;   --orange: #ffeedd; --orange-s: #e6862e;
+  --pink: #fde7f1; --pink-s: #d14d8a;     --teal: #dff5f4; --teal-s: #1f9a93;
+  --slate: #eef1f5; --slate-s: #64748b;   --yellow: #fff6d6; --yellow-s: #d29b00;
+  --good: #16a34a; --good-bg: #e8f7ee; --warn: #d97706; --warn-bg: #fff4e0; --bad: #dc2626; --bad-bg: #fdecec;
+  --head: "Poppins", "Segoe UI", system-ui, sans-serif;
+  --sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--text); font: 15px/1.55 var(--sans); margin: 0; }
+.page { max-width: 1280px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 40px 64px; display: grid; gap: 28px; }
+h1, h2, h3 { font-family: var(--head); color: var(--ink); margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+h1 { font-size: clamp(1.9rem, 4vw, 2.7rem); line-height: 1.1; font-weight: 700; }
+h2 { font-size: 1.35rem; font-weight: 600; }
+h3 { font-size: 1.02rem; font-weight: 600; }
+p { margin: 0; }
+code { font-family: var(--mono); font-size: 0.84em; }
+:focus-visible { outline: 2px solid var(--blue-s); outline-offset: 2px; }
+.hero { display: grid; gap: 12px; }
+.hero p { max-width: 70ch; font-size: 1.05rem; }
+.eyebrow { font: 600 0.74rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--blue-s); }
+.scen { display: flex; flex-wrap: wrap; gap: 8px; }
+.scen button { font: 500 0.88rem/1.2 var(--sans); color: var(--text); background: var(--bg); border: 1.5px solid var(--line); border-radius: 999px; padding: 8px 14px; cursor: pointer; display: inline-flex; gap: 8px; align-items: center; }
+.scen button b { font: 600 0.7rem/1 var(--mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--violet-s); }
+.scen button:hover { border-color: var(--wire); }
+.scen button[aria-pressed="true"] { border-color: var(--ink); color: var(--ink); background: var(--panel); }
+.bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 20px; padding: 14px 16px; background: var(--panel); border-radius: 14px; }
+.bar .q { display: grid; gap: 2px; min-width: 0; flex: 1 1 360px; }
+.bar .q p { color: var(--muted); font-size: 0.9rem; }
+.ctrls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ctrls button { font: 600 0.86rem/1 var(--sans); border-radius: 10px; padding: 10px 14px; border: 1.5px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; gap: 7px; }
+.ctrls button.primary { background: var(--ink); color: #fff; border-color: var(--ink); min-width: 96px; justify-content: center; }
+.ctrls button:hover { border-color: var(--ink); }
+.ctrls svg { width: 14px; height: 14px; fill: currentColor; }
+.prog { font: 500 0.8rem/1 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; min-width: 92px; text-align: right; }
+.lanes { display: grid; grid-template-columns: repeat(var(--lanes, 2), minmax(0, 1fr)); gap: 20px; }
+@media (max-width: 1000px) { .lanes { grid-template-columns: 1fr; } }
+.lane { border: 1.5px solid var(--line); border-radius: 18px; padding: 16px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.lane-h { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+.lane-h .t { display: grid; gap: 2px; }
+.lane-h .t span { font: 600 0.72rem/1 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.seg { display: inline-flex; background: var(--panel); border-radius: 10px; padding: 3px; }
+.seg button { font: 600 0.8rem/1 var(--sans); border: 0; background: transparent; color: var(--muted); padding: 7px 10px; border-radius: 8px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--bg); color: var(--ink); box-shadow: 0 1px 3px rgba(17,24,39,.12); }
+.counters { display: flex; gap: 8px; flex-wrap: wrap; }
+.ctr { display: inline-flex; align-items: baseline; gap: 6px; background: var(--panel); border-radius: 10px; padding: 6px 10px; font-size: 0.78rem; color: var(--muted); }
+.ctr b { font: 700 1.1rem/1 var(--head); color: var(--ink); font-variant-numeric: tabular-nums; }
+.ctr.f b { color: var(--yellow-s); }
+.start { font: 500 0.76rem/1.4 var(--mono); color: var(--muted); background: var(--panel); border-radius: 8px; padding: 6px 10px; overflow-wrap: anywhere; }
+svg.dia { width: 100%; height: auto; display: block; overflow: visible; }
+.box rect.body { stroke-width: 1.6; }
+.box text.ti { font: 600 14px var(--head); fill: var(--ink); }
+.box text.su { font: 500 10px var(--mono); fill: var(--muted); }
+.box.hit rect.body { stroke-width: 2.6; }
+@media (prefers-reduced-motion: no-preference) { .box.hit rect.body { animation: pulse .45s ease-out; } @keyframes pulse { 50% { stroke-width: 4; } } }
+.edge { stroke: var(--wire); stroke-width: 1.4; fill: none; }
+.edge.on { stroke: var(--ink); stroke-width: 2; }
+.pk rect.pill { filter: drop-shadow(0 2px 3px rgba(17,24,39,.18)); }
+.pk text { font: 600 10.5px var(--mono); }
+.pk .num { font: 700 10px var(--sans); fill: var(--ink); }
+.fbadge text.l { font: 600 10px var(--mono); letter-spacing: .05em; fill: var(--muted); }
+.fbadge text.v { font: 600 11px var(--sans); fill: var(--ink); }
+.fbadge.on rect { fill: var(--yellow); stroke: var(--yellow-s); }
+.fbadge.on text.l { fill: var(--yellow-s); }
+.note text { font: 500 10.5px var(--sans); fill: var(--ink); }
+@media (prefers-reduced-motion: no-preference) { .note, .fbadge rect { transition: opacity .25s, fill .2s, stroke .2s; } }
+.out { display: flex; gap: 12px; align-items: flex-start; border-radius: 14px; padding: 12px 14px; min-height: 76px; }
+.out .big { font: 700 1.05rem/1.2 var(--head); white-space: nowrap; padding: 6px 12px; border-radius: 999px; color: #fff; }
+.out p { font-size: 0.88rem; color: var(--text); }
+.out.good { background: var(--good-bg); } .out.good .big { background: var(--good); }
+.out.warn { background: var(--warn-bg); } .out.warn .big { background: var(--warn); }
+.out.bad { background: var(--bad-bg); } .out.bad .big { background: var(--bad); }
+.out.wait { background: var(--panel); color: var(--muted); align-items: center; }
+.out.wait .big { background: var(--wire); }
+@media (max-width: 520px) { .out { flex-direction: column; } }
+.trail { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 0.8rem; }
+.trail li { display: grid; grid-template-columns: 22px 1fr; gap: 8px; align-items: baseline; transition: opacity .2s; }
+.trail li.todo { opacity: .32; }
+.trail li.cur { font-weight: 600; }
+.trail .n { width: 20px; height: 20px; border-radius: 50%; display: inline-grid; place-items: center; font: 700 0.68rem/1 var(--sans); background: var(--ink); color: #fff; }
+.trail .n.f { background: var(--yellow-s); }
+.trail .n.o { background: var(--wire); }
+.trail code { color: var(--ink); overflow-wrap: anywhere; }
+.trail .r { color: var(--muted); }
+.card { border: 1.5px solid var(--line); border-radius: 18px; padding: 20px; display: grid; gap: 16px; min-width: 0; }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 0.86rem; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+th { font: 600 0.72rem/1.2 var(--mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+td .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+td small { display: block; color: var(--muted); font-size: 0.76rem; font-variant-numeric: tabular-nums; }
+.mk { font: 700 0.95rem/1 var(--head); }
+.mk.y { color: var(--good); } .mk.n { color: var(--bad); } .mk.p { color: var(--warn); }
+.two { display: grid; grid-template-columns: 1.3fr 1fr; gap: 20px; }
+.two.one { grid-template-columns: 1fr; }
+@media (max-width: 900px) { .two { grid-template-columns: 1fr; } }
+.closing { display: grid; gap: 10px; max-width: 72ch; }
+/* interaction: scenario inputs, inspect panel */
+.inputs { flex: 1 1 100%; display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center; padding-top: 12px; border-top: 1px solid var(--line); }
+.inp { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 0.86rem; color: var(--ink); font-weight: 500; }
+.inp select { font: 500 0.86rem/1.2 var(--sans); color: var(--ink); background: var(--bg); border: 1.5px solid var(--line); border-radius: 10px; padding: 7px 10px; max-width: 100%; }
+.inp .segi { display: inline-flex; flex-wrap: wrap; background: var(--bg); border: 1.5px solid var(--line); border-radius: 10px; padding: 3px; gap: 2px; }
+.inp .segi button { font: 600 0.8rem/1 var(--mono); border: 0; background: transparent; color: var(--muted); padding: 7px 10px; border-radius: 7px; cursor: pointer; }
+.inp .segi button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+.inp.tog input { appearance: none; width: 36px; height: 20px; border-radius: 999px; background: var(--wire); position: relative; cursor: pointer; margin: 0; transition: background .15s; }
+.inp.tog input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left .15s; }
+.inp.tog input:checked { background: var(--ink); }
+.inp.tog input:checked::after { left: 18px; }
+.box.can { cursor: pointer; }
+.box.can:focus { outline: none; }
+.box.can:focus-visible rect.body, .box.sel rect.body { stroke: var(--ink); stroke-width: 2.6; }
+.box .ib { font: 700 9px var(--sans); fill: var(--muted); }
+.pk { cursor: pointer; }
+.trail button { all: unset; display: contents; cursor: pointer; }
+.trail li:has(button:focus-visible) { outline: 2px solid var(--blue-s); outline-offset: 2px; border-radius: 6px; }
+.trail li.sel code { text-decoration: underline; text-underline-offset: 3px; }
+.insp { border: 1.5px solid var(--ink); border-radius: 14px; padding: 12px 14px; display: grid; gap: 8px; font-size: 0.82rem; min-width: 0; }
+.insp-h { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.insp-h b { font: 600 0.92rem var(--head); color: var(--ink); }
+.insp-h span { font: 500 0.72rem var(--mono); color: var(--muted); }
+.insp button.x { font: 600 0.78rem var(--sans); border: 1.5px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 8px; padding: 4px 8px; cursor: pointer; }
+.insp h4 { margin: 4px 0 0; font: 600 0.7rem/1.2 var(--mono); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.insp pre { margin: 0; font: 0.76rem/1.5 var(--mono); background: var(--panel); border-radius: 8px; padding: 8px 10px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.insp table { font-size: 0.78rem; }
+.insp th, .insp td { padding: 4px 8px; font-family: var(--mono); }
+.insp tr.chg td { background: var(--yellow); }
+footer { font-size: 0.8rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="hero"><span class="eyebrow" id="eyebrow"></span><h1 id="h1"></h1><p id="lede"></p></header>
+  <nav class="scen" id="scen" aria-label="Scenario"></nav>
+  <div class="bar">
+    <div class="q"><h2 id="q-title"></h2><p id="q-desc"></p></div>
+    <div class="ctrls">
+      <button type="button" id="b-replay"><svg viewBox="0 0 16 16"><path d="M8 2a6 6 0 1 1-5.6 3.9l1.8.7A4 4 0 1 0 8 4v2.5L4.5 3.2 8 0z"/></svg>Replay</button>
+      <button type="button" id="b-play" class="primary"></button>
+      <button type="button" id="b-step">Step<svg viewBox="0 0 16 16"><path d="M3 2l7 6-7 6zM11 2h2v12h-2z"/></svg></button>
+      <span class="prog" id="prog"></span>
+    </div>
+    <div class="inputs" id="inputs" hidden></div>
+  </div>
+  <div class="lanes" id="lanes"></div>
+  <section class="card" id="summary" aria-labelledby="sum-h">
+    <h2 id="sum-h">Side by side</h2>
+    <div class="two" id="sum-two"><div class="tw"><table id="sum-tasks"></table></div><div class="tw"><table id="sum-g"></table></div></div>
+    <div class="closing" id="closing"></div>
+  </section>
+  <footer id="footer"></footer>
+</div>
+
+<script>
+/* Step helpers, used by the data block below. */
+const req = (label, full, res, o = {}) => ({ k: "req", label, full, res, ...o });
+const filter = (t, o = {}) => ({ k: "filter", t, ...o });
+const note = (at, t) => ({ k: "note", at, t });
+</script>
+
+<script>
+/* DIAGRAM-DATA:START  (replace everything between START and END; see SKILL.md for the format) */
+const DIAGRAM = {
+  title: "Example",
+  eyebrow: "Example",
+  heading: "Replace this data block",
+  lede: "One scenario, two lanes.",
+  components: {
+    client: { title: "Client", sub: "browser", icon: "person", color: "violet", box: [8, 112, 124, 84] },
+    api: { title: "API", sub: "/v1", icon: "api", color: "blue", box: [236, 112, 124, 84] },
+    db: { title: "Database", sub: "users", icon: "db", color: "green", box: [456, 108, 136, 92] },
+  },
+  filterAt: "client",
+  lanes: [{ variants: ["a"] }, { variants: ["b"] }],
+  variants: { a: { kicker: "Today", title: "Design A" }, b: { kicker: "Proposal", title: "Design B" } },
+  scenarios: [{
+    id: "s1", tag: "User", title: "Load a profile", desc: "Fetch one user.",
+    runs: {
+      a: { steps: [req("GET /users", "GET /v1/users", "100 users", { via: [["db", "find all", "100 rows"]] }), filter("id → 1 of 100", { tone: "warn" })], out: ["warn", "Slow", "Lists everything, filters locally."] },
+      b: { steps: [req("GET /users/42", "GET /v1/users/42", "1 user", { via: [["db", "findOne", "1 row"]], tone: "good" })], out: ["good", "Direct", "One lookup."] },
+    },
+  }],
+  summary: { columns: ["a", "b"] },
+  footer: "",
+};
+/* DIAGRAM-DATA:END */
+</script>
+
+<script>
+(() => {
+"use strict";
+const D = DIAGRAM;
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+const HOP_MS = D.hopMs || 950, MOVE_MS = Math.round((D.hopMs || 950) * 0.76), VW = 600, VH = D.height || 300;
+const CIDS = Object.keys(D.components);
+const CLIENT = D.client || CIDS[0], SERVER = D.server || CIDS[1];
+
+const ICON = {
+  bot: '<rect x="0" y="3" width="18" height="13" rx="3" fill="none" stroke-width="1.6"/><circle cx="6" cy="9.5" r="1.6"/><circle cx="12" cy="9.5" r="1.6"/><path d="M9 0v3" stroke-width="1.6"/>',
+  person: '<circle cx="9" cy="5" r="4" fill="none" stroke-width="1.6"/><path d="M1 17c0-4.5 3.6-7 8-7s8 2.5 8 7" fill="none" stroke-width="1.6"/>',
+  plug: '<path d="M5 0v5M13 0v5M2 5h14v4a7 7 0 0 1-14 0zM9 16v3" fill="none" stroke-width="1.6"/>',
+  api: '<path d="M6 2 1 9l5 7M12 2l5 7-5 7" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>',
+  db: '<ellipse cx="9" cy="3.5" rx="8" ry="3" fill="none" stroke-width="1.6"/><path d="M1 3.5v11c0 1.7 3.6 3 8 3s8-1.3 8-3v-11M1 9c0 1.7 3.6 3 8 3s8-1.3 8-3" fill="none" stroke-width="1.6"/>',
+  bucket: '<path d="M1 3h16l-2.2 13.5c-.2 1-3 1.5-5.8 1.5s-5.6-.5-5.8-1.5z" fill="none" stroke-width="1.6" stroke-linejoin="round"/><ellipse cx="9" cy="3" rx="8" ry="2.2" fill="none" stroke-width="1.6"/>',
+  queue: '<rect x="0" y="2" width="18" height="4" rx="1.5" fill="none" stroke-width="1.6"/><rect x="0" y="8" width="18" height="4" rx="1.5" fill="none" stroke-width="1.6"/><rect x="0" y="14" width="18" height="4" rx="1.5" fill="none" stroke-width="1.6"/>',
+  server: '<rect x="0" y="1" width="18" height="7" rx="2" fill="none" stroke-width="1.6"/><rect x="0" y="10" width="18" height="7" rx="2" fill="none" stroke-width="1.6"/><circle cx="4" cy="4.5" r="1.2"/><circle cx="4" cy="13.5" r="1.2"/>',
+  cache: '<path d="M10 0 2 10h6l-1 8 9-11h-6z" fill="none" stroke-width="1.6" stroke-linejoin="round"/>',
+  globe: '<circle cx="9" cy="9" r="8" fill="none" stroke-width="1.6"/><path d="M1 9h16M9 1c3 3 3 13 0 16M9 1c-3 3-3 13 0 16" fill="none" stroke-width="1.4"/>',
+  lock: '<rect x="1" y="8" width="16" height="10" rx="2" fill="none" stroke-width="1.6"/><path d="M4.5 8V5a4.5 4.5 0 0 1 9 0v3" fill="none" stroke-width="1.6"/>',
+  file: '<path d="M2 0h9l5 5v13H2z M11 0v5h5" fill="none" stroke-width="1.6" stroke-linejoin="round"/>',
+};
+
+/* ---------- scenario inputs ---------- */
+// A run is either an object or a function of the scenario's input values.
+const optsOf = (inp) => (inp.options || []).map((o) => (typeof o === "object" ? o : { value: o, label: String(o) }));
+const defaults = (s) => Object.fromEntries((s.inputs || []).map((i) => [i.id, i.default ?? (i.type === "toggle" ? false : optsOf(i)[0].value)]));
+const inpVals = {};
+const valsOf = (s) => (inpVals[s.id] ||= defaults(s));
+const runOf = (s, v, vals) => { const r = s.runs[v]; return typeof r === "function" ? r(vals) : r; };
+function* valueSets(s) {
+  const d = defaults(s); yield d;
+  for (const i of s.inputs || []) for (const o of i.type === "toggle" ? [{ value: !d[i.id] }] : optsOf(i)) yield { ...d, [i.id]: o.value };
+}
+
+/* ---------- compile steps to hops ---------- */
+function compile(steps) {
+  const hops = []; let n = 0;
+  steps.forEach((s, si) => {
+    s.first = hops.length;
+    if (s.k === "req") {
+      s.n = ++n;
+      const from = s.from || CLIENT, to = s.to || SERVER, x = s.x > 1 ? ` ×${s.x}` : "";
+      hops.push({ k: "move", a: from, b: to, t: s.label, n: s.n, si });
+      for (const [c, out, back] of s.via || []) {
+        hops.push({ k: "move", a: to, b: c, t: out + x, n: s.n, si });
+        hops.push({ k: "move", a: c, b: to, t: back || "ok", n: s.n, si });
+      }
+      hops.push({ k: "move", a: to, b: from, t: s.res, n: s.n, tone: s.tone || (/^4\d\d/.test(s.res) ? "warn" : /^5\d\d/.test(s.res) ? "bad" : ""), si });
+    } else hops.push({ ...s, si });
+  });
+  return hops;
+}
+// Edges are the union of every component pair any scenario, variant or input value uses, so all lanes share one topology.
+const PAIRS = (() => {
+  const set = new Set();
+  for (const s of D.scenarios) for (const vals of valueSets(s)) for (const v of Object.keys(s.runs)) {
+    const r = runOf(s, v, vals); if (!r) continue;
+    for (const h of compile(r.steps.map((x) => ({ ...x })))) if (h.k === "move") set.add(`${h.a}|${h.b}`);
+  }
+  return [...set].map((k) => k.split("|"));
+})();
+
+/* ---------- geometry ---------- */
+const box = (k) => { const [x, y, w, h] = D.components[k].box; return { x, y, w, h }; };
+const ctr = (k) => { const b = box(k); return { x: b.x + b.w / 2, y: b.y + b.h / 2 }; };
+function edgePt(k, toward) {
+  const c = ctr(k), b = box(k), dx = toward.x - c.x, dy = toward.y - c.y;
+  const t = Math.min(dx ? (b.w / 2 + 6) / Math.abs(dx) : Infinity, dy ? (b.h / 2 + 6) / Math.abs(dy) : Infinity);
+  return { x: c.x + dx * t, y: c.y + dy * t };
+}
+function seg(a, b) {
+  // The two directions between a pair run on parallel lines, 16px apart.
+  const fwd = CIDS.indexOf(a) < CIDS.indexOf(b);
+  const [p, q] = fwd ? [a, b] : [b, a];
+  const s = edgePt(p, ctr(q)), e = edgePt(q, ctr(p));
+  const len = Math.hypot(e.x - s.x, e.y - s.y), nx = -(e.y - s.y) / len, ny = (e.x - s.x) / len, off = fwd ? -8 : 8;
+  const S = { x: s.x + nx * off, y: s.y + ny * off }, E = { x: e.x + nx * off, y: e.y + ny * off };
+  return fwd ? [S, E] : [E, S];
+}
+function noteRect(at, lines) {
+  const h = 18 + lines * 14;
+  if (Array.isArray(at)) return { x: at[0], y: at[1], w: at[2] || 160, h };
+  const b = box(at), w = Math.max(b.w, 150), x = Math.min(VW - w, Math.max(0, b.x + b.w / 2 - w / 2));
+  return { x, y: b.y - h - 10 >= 0 ? b.y - h - 10 : b.y + b.h + 10, w, h };
+}
+
+function boxSvg(k, over = {}, subOver, can) {
+  const c = { ...D.components[k], ...over }, b = box(k), col = c.color || "slate";
+  const sub = subOver ?? c.sub ?? "", parts = sub.split(" · ");
+  const lines = parts.length > 2 ? [parts.slice(0, 2).join(" · "), parts.slice(2).join(" · ")] : [sub];
+  const attrs = can ? ` class="box can" data-comp="${k}" tabindex="0" role="button" aria-label="Inspect ${esc(c.title)}"` : ' class="box"';
+  return `<g${attrs} id="bx-${k}">
+    <rect class="body" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="14" fill="var(--${col})" stroke="var(--${col}-s)"/>
+    <g transform="translate(${b.x + b.w / 2 - 9} ${b.y + 12})" stroke="var(--${col}-s)" fill="var(--${col}-s)">${ICON[c.icon] || ICON.server}</g>
+    <text class="ti" x="${b.x + b.w / 2}" y="${b.y + 50}" text-anchor="middle">${esc(c.title)}</text>
+    ${lines.filter(Boolean).map((l, i) => `<text class="su" x="${b.x + b.w / 2}" y="${b.y + 66 + i * 12}" text-anchor="middle">${esc(l)}</text>`).join("")}
+    ${can ? `<circle cx="${b.x + b.w - 13}" cy="${b.y + 13}" r="7" fill="var(--bg)" stroke="var(--${col}-s)" stroke-width="1.2"/><text class="ib" x="${b.x + b.w - 13}" y="${b.y + 16}" text-anchor="middle">i</text>` : ""}
+  </g>`;
+}
+
+function laneSvg(lane, scen, V) {
+  const edges = PAIRS.map(([a, b]) => { const [S, E] = seg(a, b); return `<line class="edge" id="e${lane.key}-${a}-${b}" x1="${S.x.toFixed(1)}" y1="${S.y.toFixed(1)}" x2="${E.x.toFixed(1)}" y2="${E.y.toFixed(1)}" marker-end="url(#ah-${lane.key})"/>`; }).join("");
+  const boxes = CIDS.map((k) => boxSvg(k, (scen.components || {})[k], (V.subs || {})[k], lane.dataKeys.has(k))).join("");
+  const notes = lane.hops.map((h, i) => {
+    if (h.k !== "note") return "";
+    const ls = h.t.split("\n"), r = noteRect(h.at, ls.length);
+    return `<g class="note" data-i="${i}" opacity="0" pointer-events="none"><rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" rx="8" fill="var(--yellow)" stroke="var(--yellow-s)" stroke-width="1.2"/>
+      ${ls.map((l, j) => `<text x="${r.x + r.w / 2}" y="${r.y + 19 + j * 14}" text-anchor="middle">${esc(l)}</text>`).join("")}</g>`;
+  }).join("");
+  let fb = "";
+  if (D.filterAt) {
+    const b = box(D.filterAt), y = b.y + b.h + 22, has = lane.hops.some((h) => h.k === "filter");
+    fb = `<g class="fbadge" opacity="${has ? 1 : 0.35}">
+      <rect x="${b.x}" y="${y}" width="${b.w}" height="54" rx="10" fill="var(--bg)" stroke="var(--line)" stroke-width="1.4" stroke-dasharray="${has ? "0" : "4 3"}"/>
+      <path transform="translate(${b.x + 10} ${y + 10})" d="M0 0h12L7.5 6v5l-3 1.5V6z" fill="var(--yellow-s)"/>
+      <text class="l" x="${b.x + 28}" y="${y + 20}">CLIENT FILTER</text>
+      <text class="v" x="${b.x + b.w / 2}" y="${y + 40}" text-anchor="middle">${has ? "idle" : "not needed"}</text></g>`;
+  }
+  return `<svg class="dia" viewBox="0 0 ${VW} ${VH}" role="img" aria-label="${esc(V.title)} request flow">
+    <defs><marker id="ah-${lane.key}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="var(--wire)"/></marker></defs>
+    ${edges}${boxes}${fb}${notes}<g class="pk" opacity="0"></g></svg>`;
+}
+
+/* ---------- component state for the inspect panel ---------- */
+// State starts from variants[v].data merged with run.data, then each step's `set` applies once the step has started.
+function dataAt(lane, t) {
+  const d = {};
+  for (const src of [lane.V.data, lane.spec.data]) for (const [c, v] of Object.entries(src || {})) d[c] = { ...d[c], ...v };
+  for (const s of lane.steps) if (s.set && t > s.first) for (const [c, v] of Object.entries(s.set)) d[c] = { ...d[c], ...v };
+  return d;
+}
+function tableHtml(rows) {
+  if (!rows.length) return '<p class="r">Empty.</p>';
+  if (typeof rows[0] !== "object") return `<pre>${esc(rows.join("\n"))}</pre>`;
+  const cols = [...new Set(rows.flatMap(Object.keys))].filter((c) => !c.startsWith("_"));
+  const cell = (v) => esc(v == null ? "" : typeof v === "object" ? JSON.stringify(v) : v);
+  return `<div class="tw"><table><tr>${cols.map((c) => `<th>${esc(c)}</th>`).join("")}</tr>${rows.map((r) => `<tr${r._new ? ' class="chg"' : ""}>${cols.map((c) => `<td>${cell(r[c])}</td>`).join("")}</tr>`).join("")}</table></div>`;
+}
+function valueHtml(v) {
+  if (v == null) return "<p>No state recorded for this component.</p>";
+  if (typeof v === "string") return `<p>${esc(v)}</p>`;
+  if (Array.isArray(v)) return tableHtml(v);
+  return Object.entries(v).map(([k, x]) => `<h4>${esc(k)}</h4>${Array.isArray(x) ? tableHtml(x) : typeof x === "string" ? `<p>${esc(x)}</p>` : `<pre>${esc(JSON.stringify(x, null, 2))}</pre>`}`).join("");
+}
+const bodyHtml = (b) => (b == null ? "" : `<pre>${esc(typeof b === "string" ? b : JSON.stringify(b, null, 2))}</pre>`);
+
+function renderInsp(lane) {
+  const el = lane.el.querySelector("[data-insp]"), sel = lane.sel, t = Math.min(state.t, lane.hops.length + 1);
+  lane.svg.querySelectorAll(".box").forEach((b) => b.classList.toggle("sel", !!sel && sel.k === "comp" && b.dataset.comp === sel.id));
+  lane.el.querySelectorAll(".trail li").forEach((li) => li.classList.toggle("sel", !!sel && sel.k === "step" && +li.dataset.s === sel.si));
+  if (!sel) { el.hidden = true; el.innerHTML = ""; return; }
+  let title, meta, body;
+  if (sel.k === "comp") {
+    const c = { ...D.components[sel.id], ...((D.scenarios[state.scen].components || {})[sel.id]) };
+    title = c.title; meta = `state at step ${t} of ${lane.hops.length + 1}`;
+    body = valueHtml(dataAt(lane, t)[sel.id]);
+  } else {
+    const s = lane.steps[sel.si];
+    if (s.k === "req") {
+      title = `Request ${s.n}`; meta = s.x > 1 ? `sent ${s.x} times` : "";
+      body = `<h4>Request</h4><pre>${esc(s.full || s.label)}</pre>${bodyHtml(s.body)}<h4>Response</h4><pre>${esc(s.res)}</pre>${bodyHtml(s.resBody)}`;
+    } else { title = s.k === "filter" ? "Client-side filter" : "Note"; meta = ""; body = `<p>${esc(s.t.replace(/\n/g, " "))}</p>`; }
+  }
+  el.innerHTML = `<div class="insp-h"><div><b>${esc(title)}</b> <span>${esc(meta)}</span></div><button type="button" class="x" data-close>Close</button></div>${body}`;
+  el.hidden = false;
+}
+
+/* ---------- lanes ---------- */
+const state = { scen: 0, t: 0, T: 0, playing: false, timer: null };
+const lanes = D.lanes.map((l, i) => ({ key: String.fromCharCode(97 + i), variants: l.variants, variant: l.variants[0], sel: null }));
+$("#lanes").style.setProperty("--lanes", lanes.length);
+$("#lanes").innerHTML = lanes.map((l) => `<section class="lane" id="lane-${l.key}"></section>`).join("");
+lanes.forEach((l) => (l.el = $(`#lane-${l.key}`)));
+
+function buildLane(lane) {
+  const scen = D.scenarios[state.scen], V = D.variants[lane.variant], spec = runOf(scen, lane.variant, valsOf(scen));
+  lane.V = V; lane.spec = spec;
+  lane.steps = spec.steps.map((s) => ({ ...s })); lane.hops = compile(lane.steps); lane.out = spec.out;
+  lane.dataKeys = new Set([V.data, spec.data, ...lane.steps.map((s) => s.set)].flatMap((o) => Object.keys(o || {})));
+  if (lane.sel && (lane.sel.k !== "comp" || !lane.dataKeys.has(lane.sel.id))) lane.sel = null;
+  const segc = lane.variants.length > 1 ? `<div class="seg" role="group" aria-label="Variant">${lane.variants.map((v) => `<button type="button" data-lane="${lane.key}" data-v="${v}" aria-pressed="${v === lane.variant}">${esc(D.variants[v].kicker)}</button>`).join("")}</div>` : "";
+  lane.el.innerHTML = `
+    <div class="lane-h"><div class="t"><span>${esc(V.kicker)}</span><h3>${esc(V.title)}</h3></div>${segc}</div>
+    <div class="counters"><span class="ctr"><b data-c="req">0</b><span data-l="req">requests</span></span>${D.filterAt ? '<span class="ctr f"><b data-c="flt">0</b><span data-l="flt">client-side filters</span></span>' : ""}</div>
+    ${spec.start ? `<div class="start">${esc(spec.start)}</div>` : ""}
+    ${laneSvg(lane, scen, V)}
+    <div class="insp" data-insp hidden aria-live="polite"></div>
+    <div class="out wait" data-out><span class="big">…</span><p></p></div>
+    <ol class="trail">${lane.steps.map((s, i) => `<li data-s="${i}" class="todo"><button type="button" data-si="${i}" aria-label="Inspect step ${i + 1}">${
+      s.k === "req" ? `<span class="n">${s.n}</span><span><code>${esc(s.full || s.label)}</code> <span class="r">→ ${esc(s.res)}</span></span>`
+      : s.k === "filter" ? `<span class="n f">F</span><span>Client filters: ${esc(s.t)}</span>`
+      : `<span class="n o">!</span><span class="r">${esc(s.t.replace(/\n/g, " "))}</span>`}</button></li>`).join("")}</ol>`;
+  lane.svg = lane.el.querySelector("svg"); lane.pk = lane.svg.querySelector(".pk"); lane.anim = null;
+}
+
+function packet(lane, hop) {
+  const g = lane.pk, isReq = hop.a === CLIENT;
+  const tone = hop.tone === "good" ? ["var(--good)", "#fff"] : hop.tone === "warn" ? ["var(--warn)", "#fff"] : hop.tone === "bad" ? ["var(--bad)", "#fff"]
+    : isReq ? ["var(--ink)", "#fff"] : ["#fff", "var(--ink)"];
+  g.dataset.si = hop.si;
+  g.innerHTML = `<rect class="pill" rx="11" height="22" fill="${tone[0]}" stroke="${isReq || hop.tone ? "none" : "var(--wire)"}"/>
+    <circle r="8" cx="0" cy="0" fill="#fff" stroke="var(--ink)" stroke-width="1.2"/><text class="num" text-anchor="middle" dy="3.5">${hop.n}</text>
+    <text class="lbl" fill="${tone[1]}" dy="3.8">${esc(hop.t)}</text>`;
+  const lbl = g.querySelector(".lbl"), w = lbl.getComputedTextLength() + 36;
+  const r = g.querySelector(".pill"); r.setAttribute("width", w); r.setAttribute("x", -w / 2); r.setAttribute("y", -11);
+  g.querySelector("circle").setAttribute("cx", -w / 2 + 12); g.querySelector(".num").setAttribute("x", -w / 2 + 12);
+  lbl.setAttribute("x", -w / 2 + 25);
+  return w;
+}
+function place(lane, S, E, p, w) {
+  const x = Math.min(VW - w / 2, Math.max(w / 2, S.x + (E.x - S.x) * p)), y = S.y + (E.y - S.y) * p;
+  lane.pk.setAttribute("transform", `translate(${x.toFixed(1)} ${y.toFixed(1)})`);
+}
+
+function render(lane, animate) {
+  const t = Math.min(state.t, lane.hops.length + 1), done = (s) => t > s.first;
+  let rq = 0, fl = 0;
+  lane.steps.forEach((s) => { if (done(s)) { if (s.k === "req") rq += s.x || 1; if (s.k === "filter") fl++; } });
+  lane.el.querySelector('[data-c="req"]').textContent = rq;
+  lane.el.querySelector('[data-l="req"]').textContent = rq === 1 ? "request" : "requests";
+  if (D.filterAt) {
+    lane.el.querySelector('[data-c="flt"]').textContent = fl;
+    lane.el.querySelector('[data-l="flt"]').textContent = fl === 1 ? "client-side filter" : "client-side filters";
+  }
+  const cur = t >= 1 && t <= lane.hops.length ? lane.hops[t - 1] : null;
+  lane.el.querySelectorAll(".trail li").forEach((li) => { const s = lane.steps[+li.dataset.s]; li.className = done(s) ? (cur && cur.si === +li.dataset.s ? "cur" : "") : "todo"; });
+  lane.svg.querySelectorAll(".note").forEach((n) => n.setAttribute("opacity", t > +n.dataset.i ? 1 : 0));
+  const fb = lane.svg.querySelector(".fbadge");
+  if (fb && lane.hops.some((h) => h.k === "filter")) {
+    const lastF = lane.hops.slice(0, t).filter((h) => h.k === "filter").pop();
+    fb.querySelector(".v").textContent = lastF ? lastF.t : "idle";
+    fb.classList.toggle("on", !!(cur && cur.k === "filter"));
+  }
+  lane.svg.querySelectorAll(".edge").forEach((e) => e.classList.remove("on"));
+  lane.svg.querySelectorAll(".box").forEach((b) => b.classList.remove("hit"));
+  cancelAnimationFrame(lane.anim);
+  if (cur && cur.k === "move") {
+    lane.svg.querySelector(`#e${lane.key}-${cur.a}-${cur.b}`)?.classList.add("on");
+    const w = packet(lane, cur), [S, E] = seg(cur.a, cur.b);
+    lane.pk.setAttribute("opacity", 1);
+    const hit = () => { const b = lane.svg.querySelector(`#bx-${cur.b}`); b.classList.remove("hit"); void b.getBBox(); b.classList.add("hit"); };
+    if (animate && !reduce.matches) {
+      const t0 = performance.now();
+      const tick = (now) => {
+        const p = Math.min(1, (now - t0) / MOVE_MS), e = p < 0.5 ? 2 * p * p : 1 - (-2 * p + 2) ** 2 / 2;
+        place(lane, S, E, 0.06 + 0.88 * e, w);
+        if (p < 1) lane.anim = requestAnimationFrame(tick); else hit();
+      };
+      lane.anim = requestAnimationFrame(tick);
+    } else { place(lane, S, E, 0.5, w); hit(); }
+  } else lane.pk.setAttribute("opacity", 0);
+  const out = lane.el.querySelector("[data-out]");
+  if (t > lane.hops.length) { out.className = `out ${lane.out[0]}`; out.innerHTML = `<span class="big">${esc(lane.out[1])}</span><p>${esc(lane.out[2])}</p>`; }
+  else { out.className = "out wait"; out.innerHTML = `<span class="big">…</span><p>${t === 0 ? "Press play to send the first request." : "Running."}</p>`; }
+  renderInsp(lane);
+}
+
+function renderAll(animate) {
+  lanes.forEach((l) => render(l, animate));
+  $("#prog").textContent = `step ${Math.min(state.t, state.T)} / ${state.T}`;
+  $("#b-play").innerHTML = state.playing ? '<svg viewBox="0 0 16 16"><path d="M3 2h4v12H3zM9 2h4v12H9z"/></svg>Pause' : '<svg viewBox="0 0 16 16"><path d="M3 1.5 14 8 3 14.5z"/></svg>Play';
+}
+
+function renderInputs() {
+  const s = D.scenarios[state.scen], vals = valsOf(s), el = $("#inputs");
+  el.hidden = !(s.inputs || []).length;
+  el.innerHTML = (s.inputs || []).map((i) => {
+    const id = `inp-${s.id}-${i.id}`;
+    if (i.type === "toggle") return `<label class="inp tog" for="${id}"><input type="checkbox" id="${id}" data-inp="${i.id}"${vals[i.id] ? " checked" : ""}>${esc(i.label)}</label>`;
+    if (i.type === "select") return `<label class="inp" for="${id}">${esc(i.label)}<select id="${id}" data-inp="${i.id}">${optsOf(i).map((o) => `<option value="${esc(o.value)}"${o.value === vals[i.id] ? " selected" : ""}>${esc(o.label)}</option>`).join("")}</select></label>`;
+    return `<div class="inp" role="group" aria-label="${esc(i.label)}"><span>${esc(i.label)}</span><span class="segi">${optsOf(i).map((o) => `<button type="button" data-inp="${i.id}" data-val="${esc(o.value)}" aria-pressed="${o.value === vals[i.id]}">${esc(o.label)}</button>`).join("")}</span></div>`;
+  }).join("");
+}
+
+function load(atEnd) {
+  stop();
+  const s = D.scenarios[state.scen];
+  $("#q-title").textContent = s.title; $("#q-desc").textContent = s.desc || "";
+  document.querySelectorAll("#scen button").forEach((b, i) => b.setAttribute("aria-pressed", i === state.scen));
+  renderInputs();
+  lanes.forEach(buildLane);
+  state.T = Math.max(...lanes.map((l) => l.hops.length)) + 1;
+  state.t = atEnd ? state.T : 0;
+  renderAll(false);
+}
+function step() { if (state.t >= state.T) return stop(); state.t++; renderAll(true); if (state.t >= state.T) stop(); }
+function play() {
+  if (state.t >= state.T) state.t = 0;
+  state.playing = true; renderAll(false); step();
+  state.timer = setInterval(step, HOP_MS);
+}
+function stop() { state.playing = false; clearInterval(state.timer); state.timer = null; if (lanes[0].hops) renderAll(false); }
+// Changing an input re-runs the scenario; with reduced motion it jumps straight to the result.
+function rerun() { if (reduce.matches) load(true); else { load(false); play(); } }
+
+$("#scen").innerHTML = D.scenarios.map((s, i) => `<button type="button" data-i="${i}" aria-pressed="false">${s.tag ? `<b>${esc(s.tag)}</b>` : ""}${esc(s.title)}</button>`).join("");
+$("#scen").hidden = D.scenarios.length < 2;
+$("#scen").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; state.scen = +b.dataset.i; lanes.forEach((l) => (l.sel = null)); load(false); play(); });
+document.addEventListener("click", (e) => {
+  const v = e.target.closest("[data-v]"); if (!v) return;
+  const lane = lanes.find((l) => l.key === v.dataset.lane), wasEnd = state.t >= state.T;
+  lane.variant = v.dataset.v; load(wasEnd); if (!wasEnd) play();
+});
+$("#b-play").addEventListener("click", () => (state.playing ? stop() : play()));
+$("#b-step").addEventListener("click", () => { if (state.playing) stop(); if (state.t >= state.T) state.t = 0; step(); });
+$("#b-replay").addEventListener("click", () => { load(false); play(); });
+
+function setInput(id, value, focusSel) {
+  valsOf(D.scenarios[state.scen])[id] = value;
+  rerun();
+  $(focusSel)?.focus();
+}
+$("#inputs").addEventListener("change", (e) => {
+  const el = e.target.closest("[data-inp]"); if (!el) return;
+  setInput(el.dataset.inp, el.type === "checkbox" ? el.checked : optsOf(D.scenarios[state.scen].inputs.find((i) => i.id === el.dataset.inp)).find((o) => String(o.value) === el.value).value, `#${el.id}`);
+});
+$("#inputs").addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-inp]"); if (!b) return;
+  const inp = D.scenarios[state.scen].inputs.find((i) => i.id === b.dataset.inp);
+  setInput(inp.id, optsOf(inp).find((o) => String(o.value) === b.dataset.val).value, `button[data-inp="${inp.id}"][data-val="${CSS.escape(b.dataset.val)}"]`);
+});
+
+// Click a component for its state, a trail item or packet for its request and response.
+function inspect(e) {
+  const laneEl = e.target.closest(".lane"); if (!laneEl) return false;
+  const lane = lanes.find((l) => l.el === laneEl);
+  const comp = e.target.closest("[data-comp]"), si = e.target.closest("[data-si]"), pk = e.target.closest(".pk"), close = e.target.closest("[data-close]");
+  let sel;
+  if (close) sel = null;
+  else if (comp) sel = { k: "comp", id: comp.dataset.comp };
+  else if (si) sel = { k: "step", si: +si.dataset.si };
+  else if (pk && pk.dataset.si) sel = { k: "step", si: +pk.dataset.si };
+  else return false;
+  const same = sel && lane.sel && sel.k === lane.sel.k && (sel.id ?? sel.si) === (lane.sel.id ?? lane.sel.si);
+  lane.sel = same ? null : sel;
+  renderInsp(lane);
+  if (close) lane.svg.querySelector(".box.can")?.focus();
+  return true;
+}
+$("#lanes").addEventListener("click", inspect);
+$("#lanes").addEventListener("keydown", (e) => { if ((e.key === "Enter" || e.key === " ") && e.target.closest("[data-comp]")) { e.preventDefault(); inspect(e); } });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") lanes.forEach((l) => { if (l.sel) { l.sel = null; renderInsp(l); } }); });
+
+/* ---------- text and summary ---------- */
+document.title = D.title; $("#eyebrow").textContent = D.eyebrow || ""; $("#h1").textContent = D.heading || D.title; $("#lede").textContent = D.lede || "";
+$("#footer").innerHTML = D.footer || "";
+const S = D.summary;
+if (!S) $("#summary").hidden = true;
+else {
+  const cols = S.columns;
+  const totals = (r) => { let a = 0, f = 0; r.steps.forEach((s) => { if (s.k === "req") a += s.x || 1; if (s.k === "filter") f++; }); return `${a} request${a === 1 ? "" : "s"}${f ? `, ${f} client filter${f === 1 ? "" : "s"}` : ""}`; };
+  $("#sum-tasks").innerHTML = `<tr><th>${esc(S.taskLabel || "Task")}</th>${cols.map((c) => `<th>${esc(D.variants[c].short || D.variants[c].kicker)}</th>`).join("")}</tr>` +
+    D.scenarios.map((s) => `<tr><td>${esc(s.title)}</td>${cols.map((c) => { const r = s.runs[c] && runOf(s, c, defaults(s)); return r ? `<td><span class="dot" style="background:var(--${r.out[0]})"></span>${esc(r.out[1])}<small>${totals(r)}</small></td>` : "<td>–</td>"; }).join("")}</tr>`).join("");
+  if (S.guarantees) {
+    const MK = { y: "✓", n: "✕", p: "~" };
+    $("#sum-g").innerHTML = `<tr><th>${esc(S.guarantees.label || "Guarantee")}</th>${cols.map((c) => `<th>${esc(D.variants[c].short || D.variants[c].kicker)}</th>`).join("")}</tr>` +
+      S.guarantees.rows.map(([k, ...c]) => `<tr><td>${esc(k)}</td>${c.map((x) => MK[x] ? `<td class="mk ${x}">${MK[x]}</td>` : `<td><small>${esc(x)}</small></td>`).join("")}</tr>`).join("");
+  } else { $("#sum-g").parentElement.remove(); $("#sum-two").classList.add("one"); }
+  if (S.closing) $("#closing").innerHTML = S.closing; else $("#closing").remove();
+}
+
+load(true);
+})();
+</script>
+</body>
+</html>
